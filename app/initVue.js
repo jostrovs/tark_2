@@ -1,8 +1,11 @@
 var $ = require("jquery");
 var toastr = require("toastr");
 var CONST = require("./js/const/const.js");
-var util = require("js/util.js");
+var API = require("./js/const/api.js");
+var UTIL = require("js/util.js");
+var EVENTS = require("js/const/events.js");
 var Raportti = require("js/classes/raportti.js");
+var bus = require("js/bus.js");
 
 $(document).ready(function () {
     var app = new Vue({
@@ -32,7 +35,7 @@ $(document).ready(function () {
                 email: "",
                 reportAuthorized: false,
             },
-            token: util.getUserToken(),
+            token: UTIL.getUserToken(),
 
             selectedReport: null,
             modal_raportti: new Raportti(),
@@ -114,15 +117,15 @@ $(document).ready(function () {
             
             this.login();
 
-            bus.on(EVENT_AVAA_RAPORTTI, this.modalReport);
-            bus.on(EVENT_RAPORTTI_VALITTU, this.reportSelected);
-            bus.on(EVENT_LOGOUT, this.logout);
-            bus.on(EVENT_SAVE_EMAIL, this.saveEmail);
-            bus.on(EVENT_REQUEST_LINK, this.requestLink);
-            bus.on(EVENT_CLOSE_REPORT, this.closeReport);
-            bus.on(EVENT_DATE_FILTER, this.setReportDateFilter);
-            bus.on(EVENT_USER_FILTER, this.setReportUserFilter);
-            bus.on(EVENT_DOWNLOAD, this.pdf);
+            bus.on(EVENTS.AVAA_RAPORTTI, this.modalReport);
+            bus.on(EVENTS.RAPORTTI_VALITTU, this.reportSelected);
+            bus.on(EVENTS.LOGOUT, this.logout);
+            bus.on(EVENTS.SAVE_EMAIL, this.saveEmail);
+            bus.on(EVENTS.REQUEST_LINK, this.requestLink);
+            bus.on(EVENTS.CLOSE_REPORT, this.closeReport);
+            bus.on(EVENTS.DATE_FILTER, this.setReportDateFilter);
+            bus.on(EVENTS.USER_FILTER, this.setReportUserFilter);
+            bus.on(EVENTS.DOWNLOAD, this.pdf);
         },
         computed: {
             viimeisin_raportti: function(){
@@ -264,8 +267,8 @@ $(document).ready(function () {
                 let self=this;
                 $.ajax({
                     dataType: 'json',
-                    url: GET_DATA,
-                    data: {cmd:cmd, arg1:arg1, token: self.token, browser: BROWSER}
+                    url: UTIL.GET_DATA,
+                    data: {cmd:cmd, arg1:arg1, token: self.token, browser: UTIL.BROWSER}
                 }).done(function(data){
                     if(data.error == 1){
                         toastr.error("Käyttäjää ei ole autentikoitu. (2)");
@@ -293,7 +296,7 @@ $(document).ready(function () {
                 let self=this;
                 if(this.token == undefined || this.token == 'undefined' || this.token == null || this.token.length < 1) return;
                 toastr.info("Kirjaudutaan sisään...");
-                this.getData(API_LOGIN, function(data){
+                this.getData(API.LOGIN, function(data){
                     toastr.clear();
                     if(data.error == 1){
                          toastr.error("Kirjautuminen epäonnistui.");

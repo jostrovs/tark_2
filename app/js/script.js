@@ -1,13 +1,3 @@
-var bus = new Vue({
-    methods: {
-        on: function(event, callback){
-            this.$on(event, callback);
-        },
-        emit: function(event, payload){
-            this.$emit(event, payload);
-        }
-    }
-});
 
 NAISET = ["HPK", "LP Kangasala", "LP Viesti", "LP-Vampula", "LiigaPloki", "Nurmon Jymy", "Oriveden Ponnistus", "Pölkky Kuusamo", "WoVo Rovaniemi"];
 MIEHET = ["Akaa-Volley", "Etta", "Hurrikaani Loimaa", "Kokkolan Tiikerit", "LEKA Volley", "Raision Loimu", "Rantaperkiön Isku", "Sampo Volley", "Team Lakkapää", "VaLePa", "Vantaa Ducks"];
