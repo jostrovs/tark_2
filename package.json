@@ -1,0 +1,19 @@
+{
+  "name": "brunch-koe",
+  "version": "1.0.0",
+  "description": "",
+  "main": "brunch-config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "jquery": "^3.2.1",
+    "moment": "^2.19.3",
+    "toastr": "^2.1.2"
+  },
+  "devDependencies": {
+    "babel-brunch": "^6.1.1"
+  }
+}

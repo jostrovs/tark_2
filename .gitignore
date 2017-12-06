@@ -1,0 +1,7 @@
+node_modules/*
+public/*
+phpdebug/*
+.vscode/ftp-sync*
+app/assets/api/dbConfig.php
+app/assets/api/credentials.php
+app/assets/api/log/*

@@ -1,0 +1,387 @@
+<!doctype html>
+
+<html lang="fi">
+
+<head>
+    <meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <LINK REL="SHORTCUT ICON" HREF="http://www.lentopalloerotuomarit.fi/tuomaritarkkailu/favicon.ico" />
+    
+    <title>Tarkkailuraportit</title>
+    <meta name="description" content="Tarkkailuraportit">
+    <meta name="author" content="Jori Ostrovskij">
+
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link rel="stylesheet" type="text/css" href="app.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="app.js"></script>
+</head>
+
+<body>
+    <p>Tämä on ennen vue-helloa</p>
+    <hehe></hehe>
+    <p>Tämä on ennen vue-hellon jälkeen</p>
+    
+    <div onclick="$('#loader').hide();" style="display: none; padding: 40px; font-size: 20px; height:80%; position: fixed; top: 10%; left: 10%; width: 80%; 
+                                               background: linear-gradient(to top, #fefcea 0%,#efdd69 100%); 
+                                               border: 3px solid #a00;" id="loader">
+        Ladataan tietoja...
+    </div>
+    
+    <div id="app">
+        <vue-news news_moment="2017-11-14" :jos="jos">
+            <span class="glyphicon glyphicon-exclamation-sign" style="color: #35c; font-size: 36px"></span>
+            <p style="font-size: large; margin-top: 10px;"><b>Uutta 14.11.2017:</b></p>
+            <ul>
+                <li><b>Pikasuodatus:</b> Raporttilistan yläpuolelle vasempaan reunaan on lisätty pikasuodatuskenttä. Jos siihen kirjoitettu teksti löytyy <i>mistä tahansa</i> sarakkeesta, niin ko. rivi näytetään listalla.</li>
+                <li><b>Sarakekohtaiset suodattimet:</b> Raporttilistan sarakkeiden suodatuskentät voi näyttää/piilottaa listan otsikon oikeassa reunassa olevalla suodatuspainikkeella: <img src="kuvat/filter.png">.</li>
+                <li><b>Viimeisin raportti:</b> Raporttilistan alapuolella on tieto siitä, milloin on lisätty viimeisin uusi raportti.</li>
+            </ul>
+        </vue-news>
+
+        <ul id="navbar" class="nav nav-tabs">
+			<li class="active"><a data-toggle="tab" href="#etusivu" id="etusivuLink"><i class="glyphicon glyphicon-home"></i> Etusivu</a>  </li>
+			<li v-show="user.login && user.reportAuthorized">
+                <a data-toggle="tab" href="#uusi" @click="pikada()">
+                    <i class="glyphicon glyphicon-plus-sign"></i> Uusi
+                </a>
+            </li>
+			<li>
+                <a data-toggle="tab" href="#help">
+                    <i class="glyphicon glyphicon-question-sign"></i> Ohje
+                </a>
+            </li>
+			<li>
+                <a v-if="jos" data-toggle="tab" href="#sivu2">
+                    Debug
+                </a>
+            </li>
+			<li>
+                <a v-if="selectedReport && jos" data-toggle="tab" @click="onPrint()" href="#print">
+                    <i class="glyphicon glyphicon-print"></i> Tulostus
+                </a>
+            </li>
+			<li style="float: right;">
+                <a data-toggle="tab" href="#user">
+                    <i class="glyphicon glyphicon-user"></i> {{user.name}}
+                </a>
+            </li>
+		</ul>
+
+        <div id="debugDiv">
+            <button class="btn" @click="jos=!jos">Toggle debug</button>
+            <button class="btn" @click="test_fill()">Täytä</button>
+            <button class="btn" @click="pdf()">Pdf</button>
+        </div>
+
+		<div class="tab-content">
+            <div id="print" class="tab-pane fade in">
+                <div v-if="parseInt(selectedReport,10) > 0">
+                    <vue-report-print :raportti="raportti" :jos="jos"></vue-report-print>                
+                </div>
+            </div>
+
+            <div id="user" class="tab-pane fade in">
+                <vue-user :user="user" :jos="jos"></vue-user>
+                
+            </div>
+
+            <div id="help" class="tab-pane fade in">
+                <vue-help></vue-help>
+            </div>
+
+            <div id="etusivu" class="tab-pane fade in active">
+                <div v-if="!user.login">
+                    <vue-login></vue-login>
+                </div>
+                <div v-else>
+                    <h1>Tarkkailuraportit</h1>
+
+                    <div class="panel panel-primary" style="max-width: 1000px;">
+                        <div class="panel-heading" onclick="$('#reportGrid').slideToggle()" style="cursor: pointer">Raportin valinta <span style="float: right; font-size: small; padding-top: 2px; cursor: pointer;"><i>Klikkaa auki/kiinni</i></span></div>
+                        <div id="reportGrid">
+                            <vue-grid-filters :date_filter="report_date_filter" :user_filter="report_user_filter" :jos="jos"></vue-grid-filters>
+                            <vue-jos-grid :options="raportit_options" :data="raportit" :jos="jos"></vue-jos-grid>
+                        </div>
+                    </div>
+
+                    <div v-if="jos"> Valittu: {{selectedReport}}</div>
+
+                    <div v-if="!selectedReport" style="font-size: 12px">{{viimeisin_raportti}}</div>
+                    
+                    <transition name="fade">
+                        <div v-if="parseInt(selectedReport,10) > 0">
+                            <vue-raportti :raportti="raportti"></vue-raportti>
+                        </div>
+                    </transition>
+                </div>                    
+			</div>
+
+			<div id="uusi" class="tab-pane fade">
+                <h1><img src="kuvat/New-file-icon.png" height="36"> Uusi raportti</h1>
+
+                <!-- Trigger the modal with a button -->
+                <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal" style="display: none;">Open Modal</button>
+                
+                <!-- Modal -->
+                <div id="myModal" class="modal fade modeless" role="dialog">
+                    <div style="min-width: 960px;" class="modal-dialog">
+
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title" id="modal-title">Raportti</h4>
+                        </div>
+                        <div class="modal-body">
+                            <vue-raportti :raportti="modal_raportti"></vue-raportti>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                        </div>
+
+                    </div>
+                </div>
+
+
+                <button class="btn btn-default" v-if="jos" id="test_fill" @click="test_fill()">Täytä</button>
+                <button class="btn btn-default" v-if="jos" id="newReport" @click="koklaa">Kokeile</button>
+                
+                <div class="well" style=" border: 1px solid #999; margin-top: 10px;" v-if="keskeytynyt">
+                    <p>Selaimen muistista löytyi keskeytynyt raportti, jota ei ole vielä talletettu. Jos haluat jatkaa sen muokkaamista, klikkaa 'Lataa keskeytynyt'-painiketta.</p>
+                    <button class="btn btn-primary" v-if="keskeytynyt" @click="load_temp()">Lataa keskeytynyt</button>
+                </div>
+
+
+                <form id="formi" action="javascript:0" @submit="postData()">
+                    <div>
+                        <button type="submit" class="btn btn-default btn-lg" style="margin-top: 10px; margin-bottom: 20px;" @click="save_temp()"><i class="glyphicon glyphicon-floppy-disk"></i> Talleta raportti</button>
+                    </div>
+
+                    <div class="panel-group">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">Ottelun tiedot</div>
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-xs-3">
+                                        <label for="pvm">Pvm</label>
+                                        <input id="pvm" class="form-control" type="text" required v-model.lazy="uusi_raportti.pvm">
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <label for="paikka">Paikka</label>
+                                        <input id="paikka" class="form-control" type="text" placeholder="Pelipaikka" required v-model="uusi_raportti.paikka">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-3">
+                                        <br>
+                                        <vue-radio-miehet :raportti="uusi_raportti" :jos="jos"></vue-radio-miehet>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-xs-3">
+                                        <label for="koti">Kotijoukkue</label>
+                                        <template v-if="jos">(valittu: {{uusi_raportti.koti}})</template>
+                                        <transition name="fade">
+                                            <select v-if="uusi_raportti.miehet !== RADIO_MUU" class="form-control" id="koti" v-model="uusi_raportti.koti" required>
+                                                <option disabled value="-1">Valitse kotijoukkue</option>
+                                                <option v-for="joukkue in joukkueet" :value="joukkue">{{joukkue}}</option>
+                                            </select>
+                                            <input v-if="uusi_raportti.miehet === RADIO_MUU" type="text" class="form-control" id="koti_text" v-model="uusi_raportti.koti" required> 
+                                        </transition>
+                                    </div>
+                                    <div class="col-xs-3">
+                                        <label for="vieras">Vierasjoukkue</label>
+                                        <template v-if="jos">(valittu: {{uusi_raportti.vieras}})</template>
+                                        <transition name="fade">
+                                            <select v-if="uusi_raportti.miehet !== RADIO_MUU" class="form-control" id="vieras" v-model="uusi_raportti.vieras" required>
+                                                <option disabled value="-1">Valitse vierasjoukkue</option>
+                                                <option v-for="joukkue in joukkueet" :value="joukkue">{{joukkue}}</option>
+                                            </select>
+                                            <input v-if="uusi_raportti.miehet === RADIO_MUU" type="text" class="form-control" id="vieras_text" v-model="uusi_raportti.vieras" required> 
+                                        </transition>
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="row">
+                                    <div class="col-xs-2">
+                                        <label for="tulos">Tulos</label>
+                                        <input id="tulos" class="form-control" type="text" required v-model="uusi_raportti.tulos">
+                                    </div>
+                                    <div class="col-xs-1">
+                                        <label for="kesto_h">Kesto h</label>
+                                        <input id="kesto_h" class="form-control" type="number" min=0 max=9 required v-model="uusi_raportti.kesto_h">
+                                    </div>
+                                    <div class="col-xs-1">
+                                        <label for="kesto_min">min</label>
+                                        <input id="kesto_min" class="form-control" type="number" min=0 max=59 required v-model="uusi_raportti.kesto_min">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">Tuomarit</div>
+                            <div class="panel-body">
+                                <div>Jos tuomaria ei löydy valintalistalta, niin valitse "Muu Tuomari" ja merkitse tuomarin nimi kehityssuosituksiin. Ylläpitäjä asettaa tuomarin nimen tietokantaan samalla kun luo ko. tuomarille tunnuksen.</div>
+                                <br>
+                                <div class="row">
+                                    <div class="col-xs-4">
+                                        <label for="pt">Päätuomari</label> <template v-if="jos">(valittu: {{uusi_raportti.pt_id}})</template>
+                                        <select class="form-control" id="pt" v-model="uusi_raportti.pt_id" @change="ptChanged()" required>
+                                            <option disabled value="-1">Valitse PT</option>
+                                            <option v-for="tuomari in tuomarit" :value="tuomari.id">{{tuomari.sukunimi}} {{tuomari.etunimi}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <br>    
+                                <div class="row">
+                                    <div class="col-xs-4">
+                                        <label for="vt">Verkkotuomari</label> <template v-if="jos">(valittu: {{uusi_raportti.vt_id}})</template>
+                                        <select class="form-control" id="vt" v-model="uusi_raportti.vt_id" @change="vtChanged()" required>
+                                            <option disabled value="-1">Valitse VT</option>
+                                            <option v-for="tuomari in tuomarit" :value="tuomari.id">{{tuomari.sukunimi}} {{tuomari.etunimi}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <br>    
+                                <div class="row">
+                                    <div class="col-xs-4">
+                                        <label for="tark">Tarkkailija</label> <template v-if="jos">(valittu: {{uusi_raportti.tark_id}})</template>
+                                        <pre style="font-family: Arial">{{user.name}}</pre>
+                                    </div>
+                                </div>
+
+                                <vue-vaikeusaste :raportti="uusi_raportti" :jos="jos"></vue-vaikeusaste>
+                            </div>
+                        </div>
+                        
+                        <h2>Päätuomari</h2>
+                        <p>Pisteet: {{uusi_raportti.pt_score}}</p>
+
+                        <vue-kokonaishuomautus :raportti="uusi_raportti" :jos="jos" pt_tai_vt="pt"> </vue-kokonaishuomautus>
+
+                        <vue-arvosanojen-selitykset></vue-arvosanojen-selitykset>                                                                         
+
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">Tuomaritekniikka ja suoritustaito</div>
+                            <div class="panel-body">
+                                <vue-rivi-edit v-for="rivi in uuden_1_5" :key="rivi.id" :raportti="uusi_raportti" :rivi="rivi" :jos="jos"></vue-rivi>
+                            </div>
+                        </div>
+                        
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">Sääntöjen sekä ohjeiden ja tulkintojen soveltaminen</div>
+                            <div class="panel-body">
+                                <vue-rivi-edit v-for="rivi in uuden_6_10" :key="rivi.id" :raportti="uusi_raportti" :rivi="rivi" :jos="jos"></vue-rivi-edit>
+                            </div>
+                        </div>
+
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">Vuorovaikutus joukkueiden kanssa</div>
+                            <div class="panel-body">
+                                <vue-rivi-edit v-for="rivi in uuden_11_13" :key="rivi.id" :raportti="uusi_raportti" :rivi="rivi" :jos="jos"></vue-rivi-edit>
+                            </div>
+                        </div>
+
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">Ottelun johtaminen ja persoonallisuus</div>
+                            <div class="panel-body">
+                                <vue-rivi-edit v-for="rivi in uuden_14_17" :key="rivi.id" :raportti="uusi_raportti" :rivi="rivi" :jos="jos"></vue-rivi>
+                            </div>
+                        </div>
+
+                     </div>
+
+                    <h2>Verkkotuomari</h2>
+                    <p>Pisteet: {{uusi_raportti.vt_score}}</p>
+
+                    <vue-kokonaishuomautus :raportti="uusi_raportti" :jos="jos" pt_tai_vt="vt"> </vue-kokonaishuomautus>
+                    
+                    <div class="panel-group">
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">Tuomaritekniikka ja suoritustaito</div>
+                            <div class="panel-body">
+                                <vue-rivi-edit v-for="rivi in uuden_101_106" :key="rivi.id" :raportti="uusi_raportti" :rivi="rivi" :jos="jos"></vue-rivi-edit>
+                            </div>
+                        </div>
+                        
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">x</div>
+                            <div class="panel-body">
+                                <vue-rivi-edit v-for="rivi in uuden_107_111" :key="rivi.id" :raportti="uusi_raportti" :rivi="rivi" :jos="jos"></vue-rivi>
+                            </div>
+                        </div>
+
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">Vuorovaikutus joukkueiden kanssa</div>
+                            <div class="panel-body">
+                                <vue-rivi-edit v-for="rivi in uuden_112_113" :key="rivi.id" :raportti="uusi_raportti" :rivi="rivi" :jos="jos"></vue-rivi>
+                            </div>
+                        </div>
+
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">Ottelun johtaminen ja persoonallisuus</div>
+                            <div class="panel-body">
+                                <vue-rivi-edit v-for="rivi in uuden_114_117" :key="rivi.id" :raportti="uusi_raportti" :rivi="rivi" :jos="jos"></vue-rivi-edit>
+                            </div>
+                        </div>
+                    </div>
+
+                    <vue-kokonaisarvio :raportti="uusi_raportti" :jos="jos"></vue-kokonaisarvio>
+
+                    <vue-otteluhuomautus :raportti="uusi_raportti" :jos="jos"></vue-otteluhuomautus>
+
+                    <div style="margin-bottom: 30px;">
+                        <button type="submit" class="btn btn-default btn-lg" @click="save_temp()"><i class="glyphicon glyphicon-floppy-disk"></i> Talleta raportti</button>
+                    </div>
+                </form>
+
+                <div v-if="jos">
+                    {{postResponse}}
+                </div>
+
+			</div>
+			<div id="sivu2" class="tab-pane fade"> 
+                <h1>Debug</h1>
+
+                <h3>Debug</h3>
+                <textarea rows="10" cols="100">
+                    {{debug}}
+                </textarea>
+
+                <h3>Tuomarit</h3>
+                <p v-for="tuomari in tuomarit">Tuomari: {{tuomari.etunimi}} {{tuomari.sukunimi}}, id: {{tuomari.id}}</p>
+
+                <h3>Aiheet</h3>
+                <p v-for="aihe in aiheet">{{aihe.no}} {{aihe.nimi}}, id: {{aihe.id}}</p>
+
+                <h3>Raportit</h3>
+                <p v-for="raportti in raportit">Id: {{raportti.id}}  {{raportti.pvm}} {{raportti.koti}}-{{raportti.vieras}} @{{raportti.paikka}}, pt: {{raportti.pt_nimi}}, vt: {{raportti.vt_nimi}}, tark: {{raportti.tark_nimi}}</p>
+
+                <h3>Rivit</h3>
+                <p v-for="rivi in rivit">Id: {{rivi.id}}  raportti: {{rivi.raportti_id}}  aihe: {{rivi.aihe_nimi}}   arvosana: {{rivi.arvosana}}  huom: {{rivi.huom}}</p>
+
+                <hr>
+
+                <div>
+                    PT-rivit: {{ptRivit.length}}
+                </div>
+                <div>
+                    VT-rivit: {{vtRivit.length}}
+                </div>
+                    
+            </div>
+        </div>        
+
+    </div>
+
+    <!--div id="luonnos" onclick="$('#luonnos').hide()">Luonnos</div-->
+
+
+    </body>
+
+</html>
