@@ -2,7 +2,7 @@ var $ = require("jquery");
 
 Vue.component('vue-hello', {
     template:` 
-    <p id="hello">{{greet}}</p>                                                                                         
+    <p id="hello">jesjes {{greet}}</p>                                                                                         
     `,
     props: ['greet'],
     data: function(){

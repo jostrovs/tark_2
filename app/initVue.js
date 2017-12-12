@@ -1,3 +1,4 @@
+
 var $ = require("jquery");
 var toastr = require("toastr");
 var CONST = require("./js/const/const.js");
@@ -6,6 +7,10 @@ var UTIL = require("js/util.js");
 var EVENTS = require("js/const/events.js");
 var Raportti = require("js/classes/raportti.js");
 var bus = require("js/bus.js");
+
+// Vue komponentit
+require("js/vue/vue-hello.js");
+require("js/vue/vue-news.js");
 
 $(document).ready(function () {
     var app = new Vue({
@@ -686,5 +691,6 @@ $(document).ready(function () {
 
         }
     });
+
 });
        

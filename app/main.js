@@ -1,5 +1,4 @@
-
-require("initVue");
+require("initVue.js");
 
 
 
