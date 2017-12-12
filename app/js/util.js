@@ -1,21 +1,11 @@
 var moment = require("moment");
 
-module.exports = {
-    BROWSER: BROWSER,
-    GET_DATA: GET_DATA,
-    INSERT_REPORT: INSERT_REPORT,
-    REQUEST_LINK: REQUEST_LINK,
-         
-    getQueryString: getQueryString,
-    getUserToken: getUserToken,
-    localGetData: localGetData,
-}
 
 var GET_DATA = 'http://www.lentopalloerotuomarit.fi/tuomaritarkkailu/api/getData.php';
 var INSERT_REPORT = 'http://www.lentopalloerotuomarit.fi/tuomaritarkkailu/api/insertReport.php';
 var REQUEST_LINK = 'http://www.lentopalloerotuomarit.fi/tuomaritarkkailu/api/requestLink.php';
 if(location.href.indexOf("localhost")>-1){
-    GET_DATA = './../api/getData.php';
+    GET_DATA = './api/getData.php';
     INSERT_REPORT = './../api/insertReport.php';
     REQUEST_LINK = './../api/requestLink.php';
 }
@@ -23,6 +13,7 @@ if(location.href.indexOf("localhost")>-1){
 moment.locale("fi");
 
 var BROWSER= (function(){
+    console.log("Haetaan browserii...");
     var ua= navigator.userAgent, tem,
     M= ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
     if(/trident/i.test(M[1])){
@@ -82,4 +73,15 @@ var localGetData=function(cmd, callback, arg1, token) {
     }).fail(function(){
         toastr.error("Tietojen haku kannasta epäonnistui.")
     });
+}
+
+module.exports = {
+    BROWSER: BROWSER,
+    GET_DATA: GET_DATA,
+    INSERT_REPORT: INSERT_REPORT,
+    REQUEST_LINK: REQUEST_LINK,
+         
+    getQueryString: getQueryString,
+    getUserToken: getUserToken,
+    localGetData: localGetData,
 }
