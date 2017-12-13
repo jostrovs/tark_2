@@ -1,6 +1,6 @@
 
 class Tuomari {
-    constrctor(data_item){
+    constructor(data_item){
         this.id = data_item.id;
         this.etunimi = data_item.etunimi;
         this.sukunimi = data_item.sukunimi;

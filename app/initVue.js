@@ -398,9 +398,10 @@ $(document).ready(function () {
                          return;
                     }
                     for(let i=0;i<data.data.length;++i){
-                    let tuomari=data.data[i];
+                        let tuomari=data.data[i];
                         self.kaikki_tuomarit.push(new Tuomari(tuomari));
                     }
+
                     self.kaikki_tuomarit.sort(function(t1, t2){ 
                         if(t1.sukunimi < t2.sukunimi) return -1;
                         if(t1.sukunimi > t2.sukunimi) return 1;
@@ -471,7 +472,7 @@ $(document).ready(function () {
                     if(data.data == null) return;
                     for(let i=0;i<data.data.length;++i){
                         let rivi = data.data[i];
-                        self.ptRivit.push(Rivi(rivi));
+                        self.ptRivit.push(new Rivi(rivi));
                     }
                     self.asetaVanhatRivit();
                     toastr.clear();
@@ -590,8 +591,8 @@ $(document).ready(function () {
                     this.uusi_raportti.paikka = r.paikka;
                     
                     this.uusi_raportti.miehet = r.miehet;
-                    if(r.miehet == RADIO_MIEHET) $("#miehet").prop("checked", true);
-                    else if(r.miehet == RADIO_NAISET) $("#naiset").prop("checked", true);
+                    if(r.miehet == CONST.RADIO_MIEHET) $("#miehet").prop("checked", true);
+                    else if(r.miehet == CONST.RADIO_NAISET) $("#naiset").prop("checked", true);
                     else $("#muu").prop("checked", true);
 
                     self.uusi_raportti.koti = r.koti;
@@ -616,7 +617,7 @@ $(document).ready(function () {
                         let rivi = r.rivit[i];
 
                         if(typeof(rivi) !== 'undefined' && typeof(rivi.arvosana) !== 'undefined'){
-                            bus.emit(EVENT_CHANGE, { aihe_no: rivi.aihe_no, arvosana: rivi.arvosana});
+                            bus.emit(EVENT.CHANGE, { aihe_no: rivi.aihe_no, arvosana: rivi.arvosana});
                         }
 
                         //console.log("i: " + i + "  uusi_rivit: " + this.uusi_raportti.rivit.length + "     rivit: " + r.rivit.length);
