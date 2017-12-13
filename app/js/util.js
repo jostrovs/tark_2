@@ -13,7 +13,6 @@ if(location.href.indexOf("localhost")>-1){
 moment.locale("fi");
 
 var BROWSER= (function(){
-    console.log("Haetaan browserii...");
     var ua= navigator.userAgent, tem,
     M= ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
     if(/trident/i.test(M[1])){

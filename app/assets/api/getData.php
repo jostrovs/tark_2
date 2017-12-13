@@ -100,6 +100,7 @@ $debug["sql"] = $sql;
 $result = $mysqli->query($sql);
 
 if($cmd != API_SAVE_EMAIL){
+    // JOS FETCH_ASSOC NÄYTTÄÄ FEILAAVAN, NIIN TARKISTA ETTÄ TAULUISSA ON KAIKKI KENTÄT!
     while($row = $result->fetch_assoc()){
         $json[] = $row;
     }

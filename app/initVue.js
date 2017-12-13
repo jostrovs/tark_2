@@ -147,12 +147,12 @@ $(document).ready(function () {
 
             tuomarit: function(){
                 return this.kaikki_tuomarit.filter(function(tuomari){
-                    return tuomari.rooli == ROOLI_TUOMARI || tuomari.rooli == ROOLI_TUOMARI_JA_TARKKAILIJA;
+                    return tuomari.rooli == CONST.ROOLI_TUOMARI || tuomari.rooli == CONST.ROOLI_TUOMARI_JA_TARKKAILIJA;
                 });
             },
             tarkkailijat: function(){
                 return this.kaikki_tuomarit.filter(function(tuomari){
-                    return tuomari.rooli == ROOLI_TARKKAILIJA || tuomari.rooli == ROOLI_TUOMARI_JA_TARKKAILIJA;
+                    return tuomari.rooli == CONST.ROOLI_TARKKAILIJA || tuomari.rooli == CONST.ROOLI_TUOMARI_JA_TARKKAILIJA;
                 });
             },
             joukkueet: function(){
@@ -317,7 +317,7 @@ $(document).ready(function () {
                         login: true,
                         login_time: d.login_time,
                         last_login: d.last_login,
-                        reportAuthorized: d.rooli == ROOLI_TARKKAILIJA || d.rooli == ROOLI_ADMIN || d.rooli == ROOLI_TUOMARI_JA_TARKKAILIJA,
+                        reportAuthorized: d.rooli == CONST.ROOLI_TARKKAILIJA || d.rooli == CONST.ROOLI_ADMIN || d.rooli == CONST.ROOLI_TUOMARI_JA_TARKKAILIJA,
                     };
 
                     self.afterLogin();
@@ -379,7 +379,7 @@ $(document).ready(function () {
 
             loadTuomarit: function(){
                 let self=this;
-                this.getData(API_HAE_TUOMARIT, function(data){
+                this.getData(API.HAE_TUOMARIT, function(data){
                     self.kaikki_tuomarit = [];
                     if(data.data == undefined){
                          console.log("loadTuomarit: data.data = null");
@@ -405,7 +405,7 @@ $(document).ready(function () {
 
             loadAiheet: function(){
                 let self=this;
-                this.getData(API_HAE_AIHEET, function(data){
+                this.getData(API.HAE_AIHEET, function(data){
                     self.aiheet = [];
                     if(data.data == undefined){
                          console.log("loadAiheet: data.data = null");
@@ -421,7 +421,7 @@ $(document).ready(function () {
 
             loadRaportit: function(){
                 let self=this;
-                this.getData(API_HAE_RAPORTIT, function(data){
+                this.getData(API.HAE_RAPORTIT, function(data){
                     self.raportit = [];
                     if(data.data == undefined){
                          console.log("loadRaportit: data.data = null");
@@ -432,14 +432,14 @@ $(document).ready(function () {
                         self.raportit.push(Raportti(raportti, self.user.last_login));
                     }
 
-                    bus.emit(EVENT_RAPORTIT_UPDATE, self.raportit);
+                    bus.emit(EVENTS.RAPORTIT_UPDATE, self.raportit);
                     toastr.clear();
                 })
             },
 
             loadRivit: function(){
                 let self=this;
-                this.getData(API_HAE_RIVIT, function(data){
+                this.getData(API.HAE_RIVIT, function(data){
                     self.rivit = [];
                     if(data.data == undefined){
                          console.log("loadRivit: data.data = null");
@@ -456,7 +456,7 @@ $(document).ready(function () {
                 let self=this;
                 if(self.uusi_raportti == undefined || self.uusi_raportti.pt_id == undefined) return;
                 toastr.info("Haetaan päätuomarin edellisiä otteluita...");
-                this.getData(API_HAE_PT_RAPORTIT, function(data){
+                this.getData(API.HAE_PT_RAPORTIT, function(data){
                     self.ptRivit = [];
                     if(data.data == null) return;
                     for(let i=0;i<data.data.length;++i){
@@ -472,7 +472,7 @@ $(document).ready(function () {
                 let self=this;
                 if(self.uusi_raportti == undefined || self.uusi_raportti.vt_id == undefined) return;
                 toastr.info("Haetaan verkkotuomarin edellisiä otteluita...");
-                this.getData(API_HAE_VT_RAPORTIT, function(data){
+                this.getData(API.HAE_VT_RAPORTIT, function(data){
                     self.vtRivit = [];
                     if(data.data == null) return;
                     for(let i=0;i<data.data.length;++i){
