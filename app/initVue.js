@@ -1,12 +1,22 @@
 
 var $ = require("jquery");
+var moment = require("moment");
 var toastr = require("toastr");
+var autosize = require("autosize");
+var pikaday = require("pikaday");
+
 var CONST = require("./js/const/const.js");
 var API = require("./js/const/api.js");
 var UTIL = require("js/util.js");
 var EVENTS = require("js/const/events.js");
-var Raportti = require("js/classes/raportti.js");
 var bus = require("js/bus.js");
+
+// Luokat
+var Raportti = require("js/classes/raportti.js");
+var Tuomari = require("js/classes/tuomari.js");
+var Aihe = require("js/classes/aihe.js");
+var Rivi = require("js/classes/rivi.js");
+
 
 // Vue komponentit
 require("js/vue/vue-hello.js");
@@ -208,7 +218,7 @@ $(document).ready(function () {
 
                 
                 if(this.pikada_ready) return;
-                var picker = new Pikaday(
+                var picker = new pikaday(
                     {
                         field: document.getElementById('pvm'),
                         firstDay: 1,
@@ -389,7 +399,7 @@ $(document).ready(function () {
                     }
                     for(let i=0;i<data.data.length;++i){
                     let tuomari=data.data[i];
-                        self.kaikki_tuomarit.push(Tuomari(tuomari));
+                        self.kaikki_tuomarit.push(new Tuomari(tuomari));
                     }
                     self.kaikki_tuomarit.sort(function(t1, t2){ 
                         if(t1.sukunimi < t2.sukunimi) return -1;
@@ -413,7 +423,7 @@ $(document).ready(function () {
                     }
                     for(let i=0;i<data.data.length;++i){
                         let aihe = data.data[i];
-                        self.aiheet.push(Aihe(aihe));
+                        self.aiheet.push(new Aihe(aihe));
                     }
                     self.newReport();
                 })
@@ -429,7 +439,7 @@ $(document).ready(function () {
                     }
                     for(let i=0;i< data.data.length;++i){
                         let raportti = data.data[i];
-                        self.raportit.push(Raportti(raportti, self.user.last_login));
+                        self.raportit.push(new Raportti(raportti, self.user.last_login));
                     }
 
                     bus.emit(EVENTS.RAPORTIT_UPDATE, self.raportit);
@@ -525,14 +535,14 @@ $(document).ready(function () {
 
             newReport: function(){
                
-                this.uusi_raportti = Raportti();
+                this.uusi_raportti = new Raportti();
                 this.uusi_raportti.rivit = [];
                 this.uusi_raportti.tark_id = this.user.id;
 
 
                 for(let i=0;i<this.aiheet.length;++i){
                     let aihe = this.aiheet[i];
-                    this.uusi_raportti.rivit.push(Rivi({
+                    this.uusi_raportti.rivit.push(new Rivi({
                         aihe_id: aihe.id,
                         nimi: aihe.nimi,
                         no: aihe.no,

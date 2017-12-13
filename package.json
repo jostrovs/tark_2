@@ -9,8 +9,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "autosize": "^4.0.0",
     "jquery": "^3.2.1",
     "moment": "^2.19.3",
+    "pikaday": "^1.7.0",
     "toastr": "^2.1.4"
   },
   "devDependencies": {

@@ -198,7 +198,7 @@ $(document).ready(function () {
 
                 
                 if(this.pikada_ready) return;
-                var picker = new Pikaday(
+                var picker = new pikaday(
                     {
                         field: document.getElementById('pvm'),
                         firstDay: 1,
