@@ -21,6 +21,7 @@ var Rivi = require("js/classes/rivi.js");
 // Vue komponentit
 require("js/vue/vue-hello.js");
 require("js/vue/vue-news.js");
+require("js/vue/vue-jos-grid.js");
 
 $(document).ready(function () {
     var app = new Vue({
@@ -85,13 +86,13 @@ $(document).ready(function () {
                 externalFilters: [], // Aseta uudestaan created-osuudessa; this-viittaukset toimivat vasta silloin.
 
                 onCreated: function(component){
-                    bus.on(EVENT_RAPORTIT_UPDATE, function(data){
+                    bus.on(EVENTS.RAPORTIT_UPDATE, function(data){
                         component.setData(data);
                     })
                 },
 
                 onRowClick: function(row_item){
-                    bus.emit(EVENT_RAPORTTI_VALITTU, row_item.id)
+                    bus.emit(EVENTS.RAPORTTI_VALITTU, row_item.id)
                 }
             }, 
 
@@ -361,7 +362,7 @@ $(document).ready(function () {
                         return;
                     }
 
-                    bus.emit(EVENT_EMAIL_SAVED);
+                    bus.emit(EVENTS.EMAIL_SAVED);
                     toastr.clear();
                     toastr.success("Sähköpostiosoite on vaihdettu.");  
                 }).fail(function(){

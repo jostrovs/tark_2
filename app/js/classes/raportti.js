@@ -1,5 +1,11 @@
 var moment = require("moment");
 var CONST = require("./../const/const.js");
+var kertoimet = require("./../const/kertoimet.js");
+var UTIL = require("./../util.js");
+var API = require("./../const/api.js");
+
+var Huomautus = require("./huomautus.js");
+var Rivi = require("./rivi.js");
 
 class Raportti{
     constructor(data_item, last_login){
@@ -107,7 +113,7 @@ class Raportti{
     
     getRivit(callback){
         let self = this;
-        localGetData(API_HAE_RAPORTIN_RIVIT, function(data){
+        UTIL.localGetData(API.HAE_RAPORTIN_RIVIT, function(data){
             self.rivit = [];
             if(data.data == undefined){
                     console.log("getRivit: data.data = null");
@@ -121,13 +127,13 @@ class Raportti{
                 let rivi=data.data[i];
                 
                 if(rivi.no < 100 && rivi.huom.length > 0){
-                    self.pt_huomautukset.push(Huomautus(rivi));
+                    self.pt_huomautukset.push(new Huomautus(rivi));
                 }
                 if(rivi.no > 100 && rivi.huom.length > 0){
-                    self.vt_huomautukset.push(Huomautus(rivi));
+                    self.vt_huomautukset.push(new Huomautus(rivi));
                 }
                 
-                let uusiRivi = Rivi(rivi);
+                let uusiRivi = new Rivi(rivi);
                 self.rivit.push(uusiRivi);
             }
             self.laske();
